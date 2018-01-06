@@ -1,51 +1,86 @@
+/*
+*
+* 问题描述：
+* https://leetcode.com/problems/binary-tree-vertical-order-traversal/description/
+*
+* 思路：
+* calculate the range(width) of left and right child
+* a queue of TreeNode
+* 一个对应的 a queue of their column number (colQueue)
+* BFS
+*
+* sample tree
+*
+*      3
+*     /\
+*    /  \
+*    9   8
+*   /\  /\
+*  /  \/  \
+* 4  01   7
+*    /\
+*   5 2
+*
+* expected result: [[4], [9, 5], [3, 0, 1], [8, 2], [7]]
+* */
+
+package 面经;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 
-class TreeNode {
-    int val;
-    TreeNode left;
-    TreeNode right;
-    TreeNode(int x) { val = x; }
-}
 public class binary_tree_vertical_order_traversal {
-    List<List<Integer>> left = new LinkedList<>();
-    List<List<Integer>> right = new LinkedList<List<Integer>>();
-    LinkedList<Integer> zero = new LinkedList<Integer>();
-
     public List<List<Integer>> verticalOrder(TreeNode root) {
-        helper(root, 0);
-        left.add(zero);
-        left.addAll(right);
-        return left;
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) {
+            return result;
+        }
+
+        int[] range = new int[] {0, 0};
+        getRange(root, range, 0); // 以上面的tree为例，这时候range变成了[-2, 2]
+
+        for (int i = range[0]; i <= range[1]; i++) {
+            result.add(new ArrayList<Integer>());
+        }
+
+        // queue是对node的queue, colQueue是对应node所在的col的queue，这样保证node被加在对应的col上
+        Queue<TreeNode> queue = new LinkedList<>();
+        Queue<Integer> colQueue = new LinkedList<>();
+
+        queue.add(root);
+        // 因为range的范围是[-2, 2]，而result list的index是[0,4]，所以-range[0]即为root所在的column
+        colQueue.add(-range[0]);
+
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            int col = colQueue.poll();
+
+            result.get(col).add(node.val);
+
+            if (node.left != null) {
+                queue.add(node.left);
+                colQueue.add(col - 1);
+            }
+            if (node.right != null) {
+                queue.add(node.right);
+                colQueue.add(col + 1);
+            }
+        }
+        return result;
     }
 
-    public void helper(TreeNode root, int index) {
-        if (root == null) return;
-        if (index == 0) {
-            zero.add(root.val);
+    public void getRange(TreeNode root, int[] range, int col) {
+        if (root == null) {
+            return;
         }
-        else if (index > 0) { // left nodes
-            if (index >= left.size()) ((LinkedList)left).addFirst(new LinkedList<Integer>());
-            left.get(left.size() - index).add(root.val);
-            System.out.println("left index is: " + (index-1) + ", node is: " + root.val + ", left size is: " + left.size());
-            for (int i = 0; i < left.size(); i++) {
-                System.out.print(left.get(i).toString());
-            }
-            System.out.println();
-        }
-        else { //right nodes
-            System.out.println("real right index: " + index + ", size of right: " + right.size());
-            if (-index > right.size()) right.add(new LinkedList<Integer>());
-            right.get(-(index+1)).add(root.val);
-            System.out.println("right index is: " + (-index+1) + ", node is: " + root.val + ", right size is: " + right.size());
-            for (int i = 0; i < right.size(); i++) {
-                System.out.print(right.get(i).toString());
-            }
-            System.out.println();
-        }
-        helper(root.left, index + 1);
-        helper(root.right, index - 1);
+        range[0] = Math.min(range[0], col);
+        range[1] = Math.max(range[1], col);
+
+        getRange(root.left, range, col - 1);
+        getRange(root.right, range, col + 1);
     }
 
     public static void main(String[] args) {
