@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 public class copy_list_with_random_pointer {
     // method 1: hashmap + 2 iteration
+    // time: O(n), space: O(n)
     public RandomListNode copyRandomList(RandomListNode head) {
         if (head == null) return null;
         HashMap<RandomListNode, RandomListNode> map = new HashMap<>();
@@ -23,6 +24,7 @@ public class copy_list_with_random_pointer {
         }
 
         // loop 2. assign next and random pointers
+        // map.get(null) = null
         node = head;
         while (node != null) {
             map.get(node).next = map.get(node.next);
