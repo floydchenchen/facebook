@@ -28,10 +28,6 @@ return 4.
 
 ![square](https://lh3.googleusercontent.com/AzOW4IgoCUektMwWVLTMPkYURxUjaabY1wUTSXf87tTbaFqv_V1dxJTxyQEmYnz6NHvDzjH5oj5YLPa4L_1pCMKmCLENGcbpmVEEcdVHcFpktC48bg-E6xLbk1Vxuk3UaC2b8YAMAS62yjOsf1ylPdhdxz29MOWszGXGWMcc3mB3QYXtjJLdezGl06LESQgqFMq7w5YUyfMXpPUuhsl_rdFg-M3VprFUlbBdOYLJZJ4Dmes9BiOtnF0sx7b-AbKilP_6MlN6f350xLNSVM-6OY7DdgJeIMiBnW5jh_qGA-xxhOXLzYv2PKmYXzic6tm2gdTKjfI1sF3I1o5B02c76dFhnjY2RLEbc4ao9HKrTpqelZhzJQA1kv8JqV8JsP-a0nt9T_XOqOGWyICrc5KBjp3ooBOybc44au8if_LQGChNHjOW6zQL1DB-BnRxSi1opAAYAh3hg0EGY8Yg-_jx-8hjOCW_iWKml4nJbFvL-KMFSOx_BffQa9yOaPhINCG7gqiXRcu_YYiCAUdBwV_O3aVwCtGbMvCNoGGR0NBZOou9tx5rKzlDi1RBgOLyg5Q=s240-w240-h216-no)
 
-the graph:
-https://lh3.googleusercontent.com/bsgJo400bLNiMs23tzqHIlux5VaO0Acf5RSo9aQmeHyWm3HAfJoHN-PlqXXBDKtParT5RuzSfGfASw70lAElqxw7HwyY5apTFYpbElf6TdcgDVwpWQpaXvDHnlmGQOn4Y-4y5-08UjZV1U97sX-1G2UpDZqgzB85VBSRPN_5ovBrsBGBQWUkvvVYLVfXp25w3ZoX9PixWjxDNiSkqC9yKWQHSSjgzhxIVarJ_nzwp7Xn_5tw9rzp1bsr5FL3zF6BGi5g9eA_xjvfJpzmM77fseIE2SxcquxKj5_R22ES7g4qQkCUYgzdyG_7VF1Rd8sB_0Wx7glvCFsDsob0Zk1EYRcluntZL_8B-nPXkNIaM2eQ9VB2CqiVJR1L0_DzoYmqdyz_myRYIzNvkyuad0qEHX6U32KcYr6y4w7n2I8RhzP3TNhW_fkZdy9PpnG-1Mu0mJv-HYtoVEQG9MXEs55pq--8dsI9_SeIcPHKts7r_uhtB_vdlmSpWnNOr8x4IavJk0AeKm5Js557JoDnqI9lERUOXHBLdgJF8IgDFno7EWXk8Ep-B0geZwn3XOHEx9eGCzg6K8oPEOomFAPINmk_6o23Jka_v84EFqnK9lvB=w240-h216-no
-
-
 * method 2: 优化DP到O(n)
     * 注意到`dp[i][j] = (Math.min(Math.min(dp[i-1][j], dp[i][j-1]), dp[i-1][j-1])) + 1`，要更新`dp[i][j]`仅使用了三个其他数值，所以可以将2D dp变成1D：在`Math.min(...)`中用`dp[j]`与`dp[j-1]`来代表`dp[i-1][j]`与`dp[i-1][j-1]`，引入**temp1与temp2去存`dp[i][j-1]`**
     * 相比method 1，在inner loop的if条件后面，**多了一个else case**，将dp[j]，即method 1中的dp[i][j]变为0，因为原来的2D array 本身就被initialize成了0，而method 2中，相当于`dp[i][j]`一开始是有`dp[i-1][j]`的值
