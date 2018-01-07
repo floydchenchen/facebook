@@ -57,31 +57,36 @@ public class binary_tree_paths {
     *
     * method 3: iterative BFS
     * use queue to store ArrayList<TreeNode>, which is the path
+    *
+    * 这样其实queue里面存了非常多的重复的Node, space 不是特别有效率
     * */
-    public List<String> binaryTreePaths3(TreeNode root) {
+    public static List<String> binaryTreePaths3(TreeNode root) {
         List<String> result = new ArrayList<>();
         if (root == null) return result;
-        Queue<ArrayList<TreeNode>> queue = new LinkedList<>();
-        queue.offer(new ArrayList<>(Arrays.asList(root)));
+        // a queue of list of TreeNodes to represent [相当于a queue of paths]
+        Queue<List<TreeNode>> queue = new LinkedList<>();
+        List<TreeNode> rootList = new ArrayList<>();
+        rootList.add(root);
+        queue.offer(rootList);
 
         while (!queue.isEmpty()) {
-            ArrayList<TreeNode> path = queue.poll();
+            List<TreeNode> path = queue.poll();
             TreeNode curr = path.get(path.size() - 1);
+            // 如果最后一个TreeNode curr是leaf
             if (curr.left == null && curr.right == null) {
                 StringBuilder sb = new StringBuilder();
-                for (TreeNode node : path)
-                    sb.append(node.val + "->");
-                sb.setLength(sb.length() - 2);//it's void type !!!
+                for (TreeNode node : path) sb.append(node.val).append("->");
+                sb.setLength(sb.length() - 2);// 去掉最后的"->"
                 result.add(sb.toString());
-                continue;
             }
             if (curr.left != null) {
-                ArrayList<TreeNode> newPath = new ArrayList<>(path);
+                // newPath直接copy旧的path!
+                List<TreeNode> newPath = new ArrayList<>(path);
                 newPath.add(curr.left);
                 queue.offer(newPath);
             }
             if (curr.right != null) {
-                ArrayList<TreeNode> newPath = new ArrayList<>(path);
+                List<TreeNode> newPath = new ArrayList<>(path);
                 newPath.add(curr.right);
                 queue.offer(newPath);
             }
@@ -93,7 +98,9 @@ public class binary_tree_paths {
     *
     * 变种
     * 比如有一个 root to leaf path 是 1 2 5 2，target 是2，那么这个 path 就应该打印成 1 1 2 5 1 2 5 2。
-    * 每次遇到 2 就把前面的路径重新 append 一下: 1 (1 2) 5 (1 2 5 2).
+    * 也就是
+    *
+    * 思路：每次遇到 2 就把前面的路径重新 append 一下: 1 (1 2) 5 (1 2 5 2).
     * */
     public List<String> binaryTreePaths4(TreeNode root,int target) {
         List<String> res = new ArrayList<>();
@@ -117,6 +124,18 @@ public class binary_tree_paths {
     }
 
     public static void main(String[] args) {
+        TreeNode root = new TreeNode(1);
+        TreeNode node2 = new TreeNode(2);
+        TreeNode node3 = new TreeNode(3);
+        TreeNode node4 = new TreeNode(4);
+        TreeNode node5 = new TreeNode(5);
+        TreeNode node6 = new TreeNode(6);
+        root.left = node2;
+        root.right = node3;
+        root.left.left = node4;
+        root.left.right = node5;
+        root.left.right.right = node6;
 
+        System.out.println(binaryTreePaths2(root));
     }
 }
