@@ -190,7 +190,7 @@ public class meeting_rooms_ii {
         }
     }
 
-    public List<String> meetingRoomsList(Interval[] intervals) {
+    public List<String> meetingRoomsList1(Interval[] intervals) {
         List<String> result = new ArrayList<>();
         if (intervals == null || intervals.length == 0)    return result;
         List<TimeSlot> times = new ArrayList<>();
@@ -220,15 +220,81 @@ public class meeting_rooms_ii {
     * 变种3：
     * print each room usage time intervals: Room 1:[2, 6],[7, 9]; Room 2:[3, 5],[8, 10]; etc.
     * 返回每个房间 所有的会议 的开始时间和结束时间。
+    *
+    * 把所有的interval排序一下，建立一个priorityqueue<List<Interval>> 按照List<Interval>最后一个interval 的end来排序，
+    * 如果新来的interval起点，比最早结束的interval终点早，或者priorityqueue为空，create 一个新的List<Interval>，
+    * 否则， poll priorityqueue。 把新的interval 加进去就好了。
+    *
+    * one pass。 方法来自机经，非自创
+    * http://www.1point3acres.com/bbs/forum.php?mod=viewthread&tid=222745&extra=page%3D1%26filter%3Dsortid%26sortid%3D311%26searchoption%5B3090%5D%5Bvalue%5D%3D2%26searchoption%5B3090%5D%5Btype%5D%3Dradio%26searchoption%5B3046%5D%5Bvalue%5D%3D2%26searchoption%5B3046%5D%5Btype%5D%3Dradio%26sortid%3D311
+    *
+    * O(nlogn) time, O(n) space
+    *
     * */
+    public static void MeetingRoomsList2(Interval[] intervals) {
+        if (intervals == null || intervals.length == 0) return;
+        // sort intervals by start time
+        Arrays.sort(intervals, (a, b) -> a.start - b.start);
+        // sort queue of rooms by list里面最后一个meeting interval的end time【即按照这个房间最后一个会议的结束时间排序】
+        Queue<LinkedList<Interval>> rooms = new PriorityQueue<>((a, b) -> a.getLast().end - b.getLast().end);
+        for (Interval interval : intervals) {
+            LinkedList<Interval> room = null;
+            //如果queue里面没有rooms，或者新的meeting interval的starttime小于rooms最后一个meeting interval的endtime
+            // 说明需要一个新的room
+            if (rooms.isEmpty() || interval.start < rooms.peek().getLast().end) room = new LinkedList<>();
+            else room = rooms.poll();//else use the previous room that ends earliest (no overlap with curr meeting)
+            room.add(interval);//add curr meeting into the room, which is at the back of the linkedlist
+            rooms.offer(room);
+        }
+        int roomNum = 1;
+        while (!rooms.isEmpty()) {
+            LinkedList<Interval> room = rooms.poll();
+            System.out.print("Room " + roomNum + ": ");
+            //you can maintain a roomNum and System.out.print("Room " + roomNum + ":");
+            for (Interval interval : room) //print each meeting in a same room
+                System.out.print("[" + interval.start + "-" + interval.end + "]");
+            System.out.println();
+            roomNum++;
+        }
+    }
 
+
+    /*
+    *
+    * 变种3：
+    * Return the time ranges of free time between startTime and endTime (time ranges that have no meetings)
+    *
+    * O(nlogn) time, O(1) space
+    *
+    * */
+    public static List<String> MeetingRoomsFreeTimeRange(Interval[] intervals, int start, int end) {
+        List<String> result = new ArrayList<>();
+        if (intervals == null || intervals.length == 0) return result;
+        Arrays.sort(intervals, (a, b) -> a.start - b.start);
+        int begin = start;//the beginTime of freeTime (end of last meeting)
+        for (Interval interval : intervals) {
+            // 如果下一个meeting开始时间大于input end，直接结束循环
+            if (begin >= end) break;
+            // 如果一个meeting的开始时间大于input start
+            if (interval.start > begin) {
+                // 再check meeting开始时间是否大于input pend
+                result.add(begin + "-" + Math.min(interval.start, end));//if the i.start exceeds end, we pick end to be the boundary
+            }
+            // 更新下一个begin时间
+            begin = Math.max(begin, interval.end);
+        }
+        // 最后别忘了check for-loop结束之后的begin time是否还是小于end time
+        // 如果是，说明input end 大于最后一个meeting的结束时间，也就是最后一个meeting结束之后还有free time
+        if (begin < end) result.add(begin + "-" + end);
+        return result;
+    }
 
 
     public static void main(String[] args) {
-        Interval i1 = new Interval(0, 30);
-        Interval i2 = new Interval(5, 20);
+        Interval i1 = new Interval(0, 14);
+        Interval i2 = new Interval(5, 10);
         Interval i3 = new Interval(15, 20);
         Interval[] intervals = new Interval[] {i1, i2, i3};
-        System.out.println(minMeetingRoomsTime(intervals));
+        System.out.println(MeetingRoomsFreeTimeRange(intervals, 0, 24));
     }
 }
