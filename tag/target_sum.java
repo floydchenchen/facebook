@@ -53,7 +53,7 @@ public class target_sum {
         if (sum < target || (target + sum) % 2 != 0) return 0;
         else return subsetSum(nums, (target + sum) / 2);
     }
-    // combination sum
+    // subset sum
     public static int subsetSum(int[] nums, int s) {
         // dp[j][i]: number of ways to get a sum of i by using nums[0] ~ nums[j]
         int[] dp = new int[s + 1];
