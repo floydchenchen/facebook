@@ -7,6 +7,9 @@
 *
 * 具体分析见 DOC/43. multiply strings
 *
+* 思路：
+* num1[i] * num2[j] will be placed at indices [i + j, i + j + 1]
+*
 * */
 
 package tag;
