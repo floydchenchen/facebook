@@ -3,6 +3,7 @@ package 面经;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class subarray_sum {
     //output the number of subarray Sum equals to k
@@ -38,7 +39,6 @@ public class subarray_sum {
         }
         return min;
     }
-
     // windowExists把主方程里的mid当成size来check
     private boolean windowExist(int size, int[] nums, int s) {
         int sum = 0;
@@ -69,6 +69,23 @@ public class subarray_sum {
         }
         return max;
     }
+
+    // 简单版：是否存在一个subarray sum equals k
+    public boolean existsSubarraySumEqualsK (int[] nums, int k) {
+        Set<Integer> set = new HashSet<>();
+        for (int i = 1; i < nums.length; i++) {
+            nums[i] += nums[i-1];
+            set.add(nums[i]);
+        }
+        for (int i : set) {
+            if (set.contains(i - k)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
 
     public static void main(String[] args) {
         int[] nums = {1,1,1};
